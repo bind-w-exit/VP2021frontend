@@ -9,24 +9,21 @@
 
 .Content {
   margin: 30px;
-  width: 350px;
+  min-width: 400px;
   height: 550px;
+  overflow-y:scroll;
 }
 
-.MainTable> tbody {
-  display:block;
-  height: 500px;
-  overflow:auto;
-  
+.PriceColumnHeader, .PriceColumn {
+  width: 25%;
 }
-.MainTable> thead, tbody tr {
-  display:table;
-  width:100%;      
-  border-style: none;   
+.NameColumnHeader, .NameColumn {
+  width: 55%;
 }
-.MainTable> thead {
-  width:100%   
+.EditColumnHeader, .EditColumnHeader {
+  width: 20%;
 }
-.MainTable {
-  width:100%;
+
+.FormPadding {
+  padding: 10px;
 }
