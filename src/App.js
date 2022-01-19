@@ -2,74 +2,79 @@ import './App.css';
 import { Button, Modal, Table } from 'react-bootstrap';
 import { Pencil } from "react-bootstrap-icons";
 import {useState} from 'react';
+import AddProductForm from './components/AddProductForm'
 
 function App() {
   
-  const date = [
-    {
-      id: 1,
-      price: '3',
-      name: 'Apple',
-    },
-    {
-      id: 2,
-      price: '10',
-      name: 'Orange',
-    },
-  ];
+  const [products, setProducts] = useState([]); 
 
-
+  /*  Modal */
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  function AddProducts() {
+    setProducts(products.concat([
+      {
+        id: 1,
+        price: '3',
+        name: 'Tree',
+      },
+      {
+        id: 2,
+        price: '10',
+        name: 'Iron',
+      },
+    ]));
+    
+    handleClose();
+ }
 
   return (
     <div className="App">
 
       <div className='Content'>
-        <Table>
+        <Table striped bordered hover className='MainTable'>
           <thead>
             <tr>
-              <th>#</th>
-              <th>Price</th>
-              <th>Name</th>
+              <th width="40%">Price</th>
+              <th width="40%">Name</th>
+              <th width="20%"></th>
             </tr>
           </thead>
-          <tbody>{date.map((item) => <tr>
-                <td>{item.id}</td>
-                <td>{item.price}</td>
-                <td>{item.name}</td>
-                <td><Button><Pencil/></Button></td>   
+          <tbody>{products.map((item) => <tr>
+                <td width="40%">{item.price}</td>
+                <td width="40%">{item.name}</td>
+                <td width="20%"><Button><Pencil/></Button></td>   
               </tr>)}
           </tbody>
         </Table>
       </div>
 
 
-      <div className='AddItemButton'>
+      <div>
         <Button onClick={handleShow}>
           Add item
-        </Button>
+        </Button>   
+      </div>
+      
 
-        <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Modal heading</Modal.Title>
+            <Modal.Title>Add product</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Woohoo, you're reading this text in a modal!
+            <AddProductForm />
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
               Close
             </Button>
-            <Button variant="primary" onClick={handleClose}>
-              Save Changes
+            <Button variant="primary" onClick={AddProducts}>
+              Save
             </Button>
           </Modal.Footer>
         </Modal>
-      </div>
-      
     </div>
   );
 }

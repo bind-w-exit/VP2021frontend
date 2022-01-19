@@ -10,5 +10,23 @@
 .Content {
   margin: 30px;
   width: 350px;
-  border: 2px solid;
+  height: 550px;
+}
+
+.MainTable> tbody {
+  display:block;
+  height: 500px;
+  overflow:auto;
+  
+}
+.MainTable> thead, tbody tr {
+  display:table;
+  width:100%;      
+  border-style: none;   
+}
+.MainTable> thead {
+  width:100%   
+}
+.MainTable {
+  width:100%;
 }
