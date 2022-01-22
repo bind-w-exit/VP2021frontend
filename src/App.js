@@ -1,48 +1,67 @@
 import './App.css';
 import { Button, Modal, Table, Form } from 'react-bootstrap';
 import { Pencil } from "react-bootstrap-icons";
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
 function App() {
-  const [id, setId] = useState('');
+
+  const baseURL = "https://api.phpist.com.ua/api"
+
+  const [id, setId] = useState(null);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
-
-  const [products, setProducts] = useState([]);
+  const [materials, setMaterials] = useState([]);
 
   /*  Modal */
   const [show, setShow] = useState(false);
+  const [isEditForm, setIsEditForm] = useState(false);
   const handleClose = () => {setShow(false)};
   const handleShow = () => setShow(true);
+  
 
+  useEffect(() => {
+    fetch(baseURL + "/get_materials")
+      .then((res) => res.json())
+      .then((materials) => setMaterials(materials));
+  }, [])
+  
+  
+  function handleSaveMaterials() {
 
-  function saveProducts() {
+    let material = { id, name, price }
 
-    let product = products.find((item) => item.id === id);
-    
-    if(product != null) {
+    if(isEditForm) {
       console.log("edit");
-      product.price = price;
-      product.name = name;
+      //TODO
       handleClose();
       setName('');
       setPrice('');
       setId('');
     }
-
     else {
       console.log("add");
-      setProducts([...products, {id: 'id' + (new Date()).getTime(), name, price}]);
+
+      //FIXME
+      // fetch(baseURL + "/save_materials", {
+      //   method: 'POST',
+      //   body: JSON.stringify(material),
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      // }).then((res) => res.json());
+
       handleClose();
       setName('');
       setPrice('');
     }
+
   }
 
-  function editProduct(item) {
+  function handleEditProduct(item) {
     setName(item.name);
     setPrice(item.price);
     setId(item.id);
+    setIsEditForm(true);
     handleShow();
   }
 
@@ -53,15 +72,15 @@ function App() {
         <Table striped bordered hover className='MainTable'>
           <thead>
             <tr>
-              <th className='PriceColumnHeader'>Price</th>
-              <th className='NameColumnHeader'>Name</th>
+              <th className='PriceColumnHeader'>Ціна</th>
+              <th className='NameColumnHeader'>Назва</th>
               <th className='EditColumnHeader'></th>
             </tr>
           </thead>
-          <tbody>{products.map((item) => <tr key={item.id}>
+          <tbody>{materials.map((item) => <tr key={item.id}>
                 <td className='PriceColumn'>{item.price}</td>
                 <td className='NameColumn'>{item.name}</td>
-                <td className='EditColumn'><Button onClick={() => editProduct(item)}><Pencil/></Button></td>   
+                <td className='EditColumn'><Button onClick={() => handleEditProduct(item)}><Pencil/></Button></td>   
               </tr>)}
           </tbody>
         </Table>
@@ -69,44 +88,42 @@ function App() {
 
 
       <div>
-        <Button onClick={handleShow}>
-          Add item
-        </Button>   
+        <Button onClick={handleShow}>Додати</Button>   
       </div>
       
 
       <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Product</Modal.Title>
+            <Modal.Title>Матеріал</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-          <Form onSubmit={(event) => {event.preventDefault(); saveProducts(price, name)}}>
-            <Form.Group className='FormPadding'>
+          <Form onSubmit={(event) => {event.preventDefault(); handleSaveMaterials(price, name)}}>
+          <Form.Group className='FormPadding'>
                 <Form.Control
                     type="text"
-                    placeholder="Price *"
-                    required
-                    value={price}
-                    onChange={(event) => setPrice(event.target.value)}
-                    />        
-            </Form.Group>
-            <Form.Group className='FormPadding'>
-                <Form.Control
-                    type="text"
-                    placeholder="Name *"
+                    placeholder="Назва *"
                     value={name}
                     onChange={(event) => setName(event.target.value)}
                     required
                     />        
             </Form.Group>
+            <Form.Group className='FormPadding'>
+                <Form.Control
+                    type="text"
+                    placeholder="Ціна *"
+                    required
+                    value={price}
+                    onChange={(event) => setPrice(event.target.value)}
+                    />        
+            </Form.Group> 
           </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
-              Close
+              Закрити
             </Button>
-            <Button variant="primary" onClick={saveProducts}>
-              Save
+            <Button variant="primary" onClick={handleSaveMaterials}>
+              Зберегти
             </Button>
           </Modal.Footer>
         </Modal>
