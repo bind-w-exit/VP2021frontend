@@ -1,6 +1,6 @@
 import './App.css';
 import { Button, Modal, Table, Form } from 'react-bootstrap';
-import { Pencil } from "react-bootstrap-icons";
+import { Pencil, Trash } from "react-bootstrap-icons";
 import {useState, useEffect} from 'react';
 
 function App() {
@@ -15,41 +15,73 @@ function App() {
   /*  Modal */
   const [show, setShow] = useState(false);
   const [isEditForm, setIsEditForm] = useState(false);
-  const handleClose = () => {setShow(false)};
+  const handleClose = () => {
+    setShow(false);
+    setId('');
+    setName('');
+    setPrice('');
+    setIsEditForm(false);
+  };
   const handleShow = () => setShow(true);
   
 
   useEffect(() => {
     fetch(baseURL + "/get_materials")
       .then((res) => res.json())
-      .then((materials) => setMaterials(materials));
+      .then((response) => setMaterials(response));
   }, [])
   
   
   function handleSaveMaterials() {
 
-    let material = { id, name, price }
+    let formData = new FormData();
+    formData.append("name", name);
+    formData.append("price", price);
 
     if(isEditForm) {
       console.log("edit");
-      //TODO
+
+      formData.append("id", id);
+
+      fetch(baseURL + "/save_materials", {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData,
+        headers: {
+          'Content-Type': 'text/html; charset=UTF-8'
+        }, 
+      });
+
+      setTimeout(() => {
+        fetch(baseURL + "/get_materials")
+          .then((res) => res.json())
+          .then((response) => setMaterials(response));
+      }, 100);
+
       handleClose();
       setName('');
       setPrice('');
       setId('');
     }
+
     else {
       console.log("add");
 
-      //FIXME
-      // fetch(baseURL + "/save_materials", {
-      //   method: 'POST',
-      //   body: JSON.stringify(material),
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      // }).then((res) => res.json());
+      fetch(baseURL + "/save_materials", {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData,
+        headers: {
+          'Content-Type': 'text/html; charset=UTF-8'
+        }, 
+      });
 
+      setTimeout(() => {
+        fetch(baseURL + "/get_materials")
+          .then((res) => res.json())
+          .then((response) => setMaterials(response));
+      }, 100);
+      
       handleClose();
       setName('');
       setPrice('');
@@ -65,6 +97,28 @@ function App() {
     handleShow();
   }
 
+  function handleDeleteProduct(item) {
+    console.log("delete");
+
+    let formData = new FormData();
+    formData.append("id", item.id);
+
+    fetch(baseURL + "/remove_materials", {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData,
+      headers: {
+        'Content-Type': 'text/html; charset=UTF-8'
+      }, 
+    });
+
+    setTimeout(() => {
+      fetch(baseURL + "/get_materials")
+        .then((res) => res.json())
+        .then((response) => setMaterials(response));
+    }, 100);
+  }
+
   return (
     <div className="App">
 
@@ -75,28 +129,33 @@ function App() {
               <th className='PriceColumnHeader'>Ціна</th>
               <th className='NameColumnHeader'>Назва</th>
               <th className='EditColumnHeader'></th>
+              <th className='DeleteColumnHeader'></th>
             </tr>
           </thead>
           <tbody>{materials.map((item) => <tr key={item.id}>
                 <td className='PriceColumn'>{item.price}</td>
                 <td className='NameColumn'>{item.name}</td>
-                <td className='EditColumn'><Button onClick={() => handleEditProduct(item)}><Pencil/></Button></td>   
+                <td className='EditColumn'>
+                  <Button onClick={() => handleEditProduct(item)} variant="secondary"><Pencil/></Button>
+                </td>   
+                <td className='DeleteColumn'>
+                  <Button onClick={() => handleDeleteProduct(item)} variant="danger"><Trash/></Button>
+                </td>
+
               </tr>)}
           </tbody>
         </Table>
       </div>
 
-
-      <div>
-        <Button onClick={handleShow}>Додати</Button>   
-      </div>
-      
+      <Button onClick={handleShow}>Додати</Button>   
 
       <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Матеріал</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
+
+        <Modal.Header closeButton>
+          <Modal.Title>Матеріал</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
           <Form onSubmit={(event) => {event.preventDefault(); handleSaveMaterials(price, name)}}>
           <Form.Group className='FormPadding'>
                 <Form.Control
@@ -117,16 +176,19 @@ function App() {
                     />        
             </Form.Group> 
           </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Закрити
-            </Button>
-            <Button variant="primary" onClick={handleSaveMaterials}>
-              Зберегти
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Закрити
+          </Button>
+
+          <Button variant="primary" onClick={handleSaveMaterials}>
+            Зберегти
+          </Button>
+        </Modal.Footer>
+
+      </Modal>
     </div>
   );
 }

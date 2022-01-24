@@ -9,8 +9,10 @@
 
 .Content {
   margin: 30px;
-  min-width: 400px;
-  height: 550px;
+  min-width: 350px;
+  width: 90%;
+  max-width: 500px;
+  height: 600px;
   overflow-y:scroll;
 }
 
@@ -20,8 +22,8 @@
 .NameColumnHeader, .NameColumn {
   width: 55%;
 }
-.EditColumnHeader, .EditColumnHeader {
-  width: 20%;
+.EditColumnHeader, .EditColumn .DeleteColumnHeader .DeleteColumn {
+  width: 10%;
 }
 
 .FormPadding {
