@@ -13,19 +13,23 @@
   width: 90%;
   max-width: 500px;
   height: 600px;
-  overflow-y:scroll;
+  overflow-y: scroll;
 }
 
 .PriceColumnHeader, .PriceColumn {
   width: 25%;
 }
 .NameColumnHeader, .NameColumn {
-  width: 55%;
+  width: 65%;
 }
-.EditColumnHeader, .EditColumn .DeleteColumnHeader .DeleteColumn {
-  width: 10%;
+.EditColumnHeader, .EditColumn {
+  width: 20%;
 }
 
 .FormPadding {
   padding: 10px;
+}
+
+.DeleteButton {
+  margin-right: auto;
 }
