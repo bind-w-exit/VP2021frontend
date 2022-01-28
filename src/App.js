@@ -6,7 +6,7 @@ import {useState, useEffect} from 'react';
 
 function App() {
 
-  const baseURL = "https://api.phpist.com.ua/api"
+  const baseURL = "http://localhost:3001/api"
 
   const [id, setId] = useState(null);
   const [name, setName] = useState('');
@@ -26,32 +26,28 @@ function App() {
   };
   
   useEffect(() => {
-    fetch(baseURL + "/get_materials")
+    fetch(baseURL + "/material")
       .then((res) => res.json())
       .then((response) => setMaterials(response));
   });
   
   
   function handleSaveMaterials() {
-    let formData = new FormData();
-    formData.append("id", id);
-    formData.append("name", name);
-    formData.append("price", price);
+    
 
     if(isEditForm) {
       console.log("edit");  
 
-      fetch(baseURL + "/save_materials", {
-        method: 'POST',
-        mode: 'no-cors',
-        body: formData,
+      fetch(baseURL + `/material/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({name, price}),
         headers: {
-          'Content-Type': 'text/html; charset=UTF-8'
-        }, 
+          'Content-Type': 'application/json'
+        } 
       });
 
       setTimeout(() => {
-        fetch(baseURL + "/get_materials")
+        fetch(baseURL + "/material")
           .then((res) => res.json())
           .then((response) => setMaterials(response));
       }, 100);     
@@ -60,17 +56,16 @@ function App() {
     else {
       console.log("add");
 
-      fetch(baseURL + "/save_materials", {
+      fetch(baseURL + "/material", {
         method: 'POST',
-        mode: 'no-cors',
-        body: formData,
+        body: JSON.stringify({name, price}),
         headers: {
-          'Content-Type': 'text/html; charset=UTF-8'
-        }, 
+          'Content-Type': 'application/json'
+        } 
       });
 
       setTimeout(() => {
-        fetch(baseURL + "/get_materials")
+        fetch(baseURL + "/material")
           .then((res) => res.json())
           .then((response) => setMaterials(response));
       }, 100); 
@@ -90,20 +85,12 @@ function App() {
   function handleDeleteProduct() {
     console.log("delete");
 
-    let formData = new FormData();
-    formData.append("id", id);
-
-    fetch(baseURL + "/remove_materials", {
-      method: 'POST',
-      mode: 'no-cors',
-      body: formData,
-      headers: {
-        'Content-Type': 'text/html; charset=UTF-8'
-      }, 
+    fetch(baseURL + `/material/${id}`, {
+      method: 'DELETE'
     });
 
     setTimeout(() => {
-      fetch(baseURL + "/get_materials")
+      fetch(baseURL + "/material")
         .then((res) => res.json())
         .then((response) => setMaterials(response));
     }, 100);
@@ -114,7 +101,7 @@ function App() {
   function sumOfMaterials(){
     let sum = 0;
     materials.forEach((item) => sum += Number(item.price))
-    return sum;
+    return sum.toFixed(2);
   }
 
   function amountOfMaterials(){
